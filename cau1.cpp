@@ -33,12 +33,6 @@ void print(Tree t) // duyet theo LNR
     cout << t->x << " ";
     print(t->pright);
 }
-Node *minvalue(Node *p)
-{
-    if (p->pleft == NULL)
-        return p;
-    return minvalue(p->pleft);
-}
 bool find_node(Tree t, int x)
 {
     if (t == NULL)
@@ -53,33 +47,38 @@ bool find_node(Tree t, int x)
             return find_node(t->pright, x);
     }
 }
-void delete_tree(Tree &t, int x)
+void thay_the(Tree &p, Tree &t)
 {
-    if (t == NULL)
-        return;
-    if (t->x > x)
-        delete_tree(t->pleft, x);
-    else if (t->x < x)
-        delete_tree(t->pright, x);
+    if (t->pleft != nullptr)
+        thay_the(p, t->pleft);
     else
     {
-        if (t->pleft == NULL && t->pright == NULL)
-        {
-            t = NULL;
-            return;
-        }
+        p->x = t->x;
+        p = t;
+        t = t->pright;
+    }
+}
+void delete_node(Tree &t, int x)
+{
+    if (t == nullptr)
+        return;
+    if (t->x > x)
+        delete_node(t->pleft, x);
+    else if (t->x < x)
+        delete_node(t->pright, x);
+    else
+    {
+        Node *p = t;
+        if (t->pleft == nullptr)
+            t = t->pright;
         else
         {
-            Node *tmp;
-            if (t->pleft == NULL)
-                tmp = t->pright;
-            else if (t->pright == NULL)
-                tmp = t->pleft;
+            if (t->pright == nullptr)
+                t = t->pleft;
             else
-                tmp = minvalue(t->pright);
-            t->x = tmp->x;
-            delete_tree(t->pright, t->x);
+                thay_the(p, t->pright);
         }
+        delete p;
     }
 }
 void print_NLR(Tree t)
@@ -115,13 +114,13 @@ int main()
     print(mytree);
 
     // delete
-    delete_tree(mytree, 20);
+    delete_node(mytree, 20);
     cout << endl;
     print(mytree);
-    delete_tree(mytree, 30);
+    delete_node(mytree, 30);
     cout << endl;
     print(mytree);
-    delete_tree(mytree, 50);
+    delete_node(mytree, 50);
     cout << endl;
     print(mytree);
     cout << endl;
